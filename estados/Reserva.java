@@ -3,14 +3,17 @@ package estados;
 import dominio.Centro;
 import dominio.LineaReserva;
 import dominio.Mascota;
+import dominio.Pago;
 import dominio.PoliticaCancelacion;
 import dominio.Usuario;
 import incidentes.IHandlerIncidente;
 import incidentes.Incidente;
+import interfaces.ICanalNotificacion;
 import interfaces.INotifier;
 import interfaces.IPagoProcessor;
 import interfaces.IPricingStrategy;
 import interfaces.IServicioBase;
+import notificaciones.Notificador;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -151,13 +154,34 @@ public class Reserva {
         // El estado maneja la confirmación
         estado.manejarConfirmacion(this);
         
-        // Procesar pago (se implementará completamente en Parte 4)
-        // String referenciaPago = pagos.autorizar(total, "Reserva-" + id);
+        // Crear y procesar pago
+        Pago pago = new Pago(UUID.randomUUID().toString().substring(0, 8), this.id, this.total);
+        pago.autorizar(pagos);
+        pago.capturar(pagos);
         
-        // Enviar notificación (se implementará completamente en Parte 4)
-        // notificador.enviar(usuario, canal, "Su reserva #" + id + " ha sido confirmada");
+        // Enviar notificación según preferencia del usuario
+        String mensajeConfirmacion = String.format(
+            "Su reserva #%s ha sido confirmada exitosamente. Total: %s. Período: %s",
+            id, total.toString(), periodo.toString()
+        );
+        
+        if (notificador instanceof Notificador) {
+            ((Notificador) notificador).enviarSegunPreferencia(usuario, mensajeConfirmacion);
+        } else {
+            // Fallback: usar método genérico si no es Notificador
+            ICanalNotificacion canal = obtenerCanalPorPreferencia(usuario);
+            notificador.enviar(usuario, canal, mensajeConfirmacion);
+        }
         
         System.out.println("  [Reserva] Reserva #" + id + " confirmada. Total: " + total.toString());
+    }
+    
+    /**
+     * Método auxiliar para obtener el canal según la preferencia del usuario.
+     */
+    private ICanalNotificacion obtenerCanalPorPreferencia(Usuario usuario) {
+        // Por defecto usar email si no se puede determinar
+        return new notificaciones.EmailCanal("smtp.petdaycare.com");
     }
 
     /**
@@ -184,11 +208,34 @@ public class Reserva {
         // El estado maneja la cancelación
         estado.manejarCancelacion(this, motivo);
         
-        // Procesar reembolso (se implementará completamente en Parte 4)
-        // pagos.reembolsar("referencia-pago-" + id, montoReembolso);
+        // Procesar reembolso si hay monto a reembolsar
+        if (montoReembolso.getMonto().compareTo(java.math.BigDecimal.ZERO) > 0) {
+            // Buscar el pago asociado (en producción esto vendría de un repositorio)
+            // Por ahora simulamos el reembolso
+            String referenciaPago = "pago-" + id;
+            try {
+                pagos.reembolsar(referenciaPago, montoReembolso);
+                System.out.println("  [Reserva] Reembolso procesado: " + montoReembolso.toString());
+            } catch (Exception e) {
+                System.out.println("  [Reserva] Error al procesar reembolso: " + e.getMessage());
+            }
+        } else {
+            System.out.println("  [Reserva] No hay monto a reembolsar (penalidad completa)");
+        }
         
-        // Enviar notificación (se implementará completamente en Parte 4)
-        // notificador.enviar(usuario, canal, "Su reserva #" + id + " ha sido cancelada");
+        // Enviar notificación según preferencia del usuario
+        String mensajeCancelacion = String.format(
+            "Su reserva #%s ha sido cancelada. Motivo: %s. Penalidad aplicada: %s. Reembolso: %s",
+            id, motivo, penalidad.toString(), montoReembolso.toString()
+        );
+        
+        if (notificador instanceof Notificador) {
+            ((Notificador) notificador).enviarSegunPreferencia(usuario, mensajeCancelacion);
+        } else {
+            // Fallback: usar método genérico si no es Notificador
+            ICanalNotificacion canal = obtenerCanalPorPreferencia(usuario);
+            notificador.enviar(usuario, canal, mensajeCancelacion);
+        }
         
         System.out.println("  [Reserva] Reserva #" + id + " cancelada. Motivo: " + motivo);
         System.out.println("  [Reserva] Penalidad: " + penalidad.toString() + ", Reembolso: " + montoReembolso.toString());

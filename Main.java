@@ -47,18 +47,18 @@ public class Main {
         double precioBase = guarderiaGrande.calcularPrecio("diario", opciones, "standard");
         System.out.println("Precio base (diario): $" + precioBase);
         
-        System.out.println("\n--- Servicio Decorado (Guardería + Veterinaria + Camas) ---");
+        System.out.println("\n--- Servicio Decorado (Guardería + Veterinaria + Cámara en Vivo) ---");
         ServicioAbstracto guarderiaDecorada = new AtencionVeterinariaDecorator(
-            new CamasEnvioDecorator(guarderiaGrande)
+            new CamaraEnVivoDecorator(guarderiaGrande)
         );
         System.out.println(guarderiaDecorada);
         double precioDecorado = guarderiaDecorada.calcularPrecio("diario", opciones, "standard");
         System.out.println("Precio total decorado: $" + precioDecorado);
         
         System.out.println("\n--- Servicio Triple Decorado (Hospedaje + Todos los Extras) ---");
-        ServicioAbstracto hospedajeCompleto = new RecorteTermoRicosDecorator(
+        ServicioAbstracto hospedajeCompleto = new ReporteTiempoRealDecorator(
             new AtencionVeterinariaDecorator(
-                new CamasEnvioDecorator(hospedajeGrande)
+                new CamaraEnVivoDecorator(hospedajeGrande)
             )
         );
         System.out.println(hospedajeCompleto);
@@ -134,7 +134,7 @@ public class Main {
         
         System.out.println("\n--- Paso 2: Se agregan servicios adicionales (Decoradores) ---");
         ServicioAbstracto entrenamientoPremium = new AtencionVeterinariaDecorator(
-            new RecorteTermoRicosDecorator(entrenamientoBase)
+            new ReporteTiempoRealDecorator(entrenamientoBase)
         );
         System.out.println(entrenamientoPremium);
         

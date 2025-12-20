@@ -95,6 +95,18 @@ public class Usuario {
         setTelefono(telefono);
     }
 
+    /**
+     * Registra una mascota para el usuario.
+     * Según el diagrama UML, Usuario debe tener este método.
+     */
+    public void registrarMascota(dominio.Mascota mascota) {
+        if (mascota == null) {
+            throw new IllegalArgumentException("La mascota no puede ser null");
+        }
+        System.out.println("  [Usuario] " + nombre + " registró la mascota: " + mascota.getNombre());
+        // En producción, esto guardaría la relación usuario-mascota en un repositorio
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

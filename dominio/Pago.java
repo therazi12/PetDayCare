@@ -1,0 +1,183 @@
+package dominio;
+
+import interfaces.IPagoProcessor;
+import java.util.Objects;
+import valueobjects.Money;
+
+/**
+ * Clase que representa un pago en el sistema PetDayCare.
+ */
+public class Pago {
+    private String id;
+    private String reservaId;
+    private Money monto;
+    private String estado; // "pendiente", "autorizado", "capturado", "reembolsado", "fallido"
+    private String referenciaExterna; // Referencia del proveedor de pago externo
+
+    public Pago(String id, String reservaId, Money monto) {
+        if (id == null || id.trim().isEmpty()) {
+            throw new IllegalArgumentException("El ID no puede ser null o vacío");
+        }
+        if (reservaId == null || reservaId.trim().isEmpty()) {
+            throw new IllegalArgumentException("El ID de reserva no puede ser null o vacío");
+        }
+        if (monto == null) {
+            throw new IllegalArgumentException("El monto no puede ser null");
+        }
+        if (monto.getMonto().compareTo(java.math.BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("El monto debe ser mayor que cero");
+        }
+        
+        this.id = id;
+        this.reservaId = reservaId;
+        this.monto = monto;
+        this.estado = "pendiente";
+        this.referenciaExterna = "";
+    }
+
+    /**
+     * Autoriza el pago usando un procesador de pagos.
+     */
+    public void autorizar(IPagoProcessor processor) {
+        if (processor == null) {
+            throw new IllegalArgumentException("El procesador de pagos no puede ser null");
+        }
+        if (!"pendiente".equals(estado)) {
+            throw new IllegalStateException("Solo se pueden autorizar pagos en estado pendiente. Estado actual: " + estado);
+        }
+        
+        try {
+            String referencia = processor.autorizar(monto, "Reserva-" + reservaId);
+            this.referenciaExterna = referencia;
+            this.estado = "autorizado";
+            System.out.println("  [Pago] Pago #" + id + " autorizado. Referencia: " + referencia);
+        } catch (Exception e) {
+            this.estado = "fallido";
+            System.out.println("  [Pago] Error al autorizar pago #" + id + ": " + e.getMessage());
+            throw new RuntimeException("Error al autorizar el pago", e);
+        }
+    }
+
+    /**
+     * Captura un pago previamente autorizado.
+     */
+    public void capturar(IPagoProcessor processor) {
+        if (processor == null) {
+            throw new IllegalArgumentException("El procesador de pagos no puede ser null");
+        }
+        if (!"autorizado".equals(estado)) {
+            throw new IllegalStateException("Solo se pueden capturar pagos autorizados. Estado actual: " + estado);
+        }
+        if (referenciaExterna == null || referenciaExterna.trim().isEmpty()) {
+            throw new IllegalStateException("No hay referencia externa para capturar");
+        }
+        
+        try {
+            processor.capturar(referenciaExterna);
+            this.estado = "capturado";
+            System.out.println("  [Pago] Pago #" + id + " capturado exitosamente");
+        } catch (Exception e) {
+            this.estado = "fallido";
+            System.out.println("  [Pago] Error al capturar pago #" + id + ": " + e.getMessage());
+            throw new RuntimeException("Error al capturar el pago", e);
+        }
+    }
+
+    /**
+     * Reembolsa un pago capturado.
+     */
+    public void reembolsar(IPagoProcessor processor) {
+        if (processor == null) {
+            throw new IllegalArgumentException("El procesador de pagos no puede ser null");
+        }
+        if (!"capturado".equals(estado)) {
+            throw new IllegalStateException("Solo se pueden reembolsar pagos capturados. Estado actual: " + estado);
+        }
+        if (referenciaExterna == null || referenciaExterna.trim().isEmpty()) {
+            throw new IllegalStateException("No hay referencia externa para reembolsar");
+        }
+        
+        try {
+            processor.reembolsar(referenciaExterna, monto);
+            this.estado = "reembolsado";
+            System.out.println("  [Pago] Pago #" + id + " reembolsado exitosamente");
+        } catch (Exception e) {
+            System.out.println("  [Pago] Error al reembolsar pago #" + id + ": " + e.getMessage());
+            throw new RuntimeException("Error al reembolsar el pago", e);
+        }
+    }
+
+    // Getters
+    public String getId() {
+        return id;
+    }
+
+    public String getReservaId() {
+        return reservaId;
+    }
+
+    public Money getMonto() {
+        return monto;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public String getReferenciaExterna() {
+        return referenciaExterna;
+    }
+
+    // Setters
+    public void setEstado(String estado) {
+        if (estado == null || estado.trim().isEmpty()) {
+            throw new IllegalArgumentException("El estado no puede ser null o vacío");
+        }
+        this.estado = estado.toLowerCase().trim();
+    }
+
+    public void setReferenciaExterna(String referenciaExterna) {
+        this.referenciaExterna = referenciaExterna != null ? referenciaExterna : "";
+    }
+
+    /**
+     * Verifica si el pago está completado (capturado).
+     */
+    public boolean estaCompletado() {
+        return "capturado".equals(estado);
+    }
+
+    /**
+     * Verifica si el pago está autorizado pero no capturado.
+     */
+    public boolean estaAutorizado() {
+        return "autorizado".equals(estado);
+    }
+
+    /**
+     * Verifica si el pago falló.
+     */
+    public boolean fallo() {
+        return "fallido".equals(estado);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Pago pago = (Pago) obj;
+        return Objects.equals(id, pago.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Pago[id=%s, reservaId=%s, monto=%s, estado=%s, referencia=%s]",
+                id, reservaId, monto.toString(), estado, referenciaExterna);
+    }
+}
+
