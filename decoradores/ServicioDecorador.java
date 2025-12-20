@@ -1,9 +1,16 @@
 package decoradores;
 
+import interfaces.ICompatibilidadStrategy;
+import interfaces.IPricingStrategy;
 import servicios.ServicioAbstracto;
+import valueobjects.Money;
+import valueobjects.Periodo;
 import java.util.List;
 
-
+/**
+ * Clase abstracta base para todos los decoradores de servicios.
+ * Implementa el patrón Decorator para añadir funcionalidades a los servicios.
+ */
 public abstract class ServicioDecorador extends ServicioAbstracto {
     protected ServicioAbstracto servicioDecorado;
 
@@ -14,12 +21,12 @@ public abstract class ServicioDecorador extends ServicioAbstracto {
     }
 
     @Override
-    public boolean esCompatible(String mascota, String regla) {
+    public boolean esCompatible(Object mascota, ICompatibilidadStrategy regla) {
         return servicioDecorado.esCompatible(mascota, regla);
     }
 
     @Override
-    public boolean verificarDisponibilidad(String periodo) {
+    public boolean verificarDisponibilidad(Periodo periodo) {
         return servicioDecorado.verificarDisponibilidad(periodo);
     }
 
@@ -29,7 +36,7 @@ public abstract class ServicioDecorador extends ServicioAbstracto {
     }
 
     @Override
-    public double calcularPrecio(String periodo, List<String> opciones, String pricingStrategy) {
-        return servicioDecorado.calcularPrecio(periodo, opciones, pricingStrategy);
+    public Money calcularPrecio(Periodo periodo, List<String> opciones, IPricingStrategy pricing) {
+        return servicioDecorado.calcularPrecio(periodo, opciones, pricing);
     }
 }
