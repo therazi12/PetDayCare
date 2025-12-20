@@ -10,7 +10,6 @@ PetDayCare es una aplicación que permite gestionar reservas, servicios, pagos y
 
 - **Gestión de Centros**: Soporte para diferentes tipos de centros (grandes y pequeños)
 - **Servicios Personalizables**: Guardería, hospedaje, paseo, entrenamiento y bienestar
-- **Sistema de Pagos**: Integración con PayPal y Stripe mediante adaptadores
 - **Notificaciones**: Sistema de notificaciones multi-canal (Email, SMS, Mensajería)
 - **Gestión de Reservas**: Estados, cancelaciones y políticas de penalización
 - **Manejo de Incidentes**: Sistema escalado de atención de incidentes
