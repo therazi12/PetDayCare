@@ -1,15 +1,17 @@
 package decoradores;
 
+import interfaces.IPricingStrategy;
 import servicios.ServicioAbstracto;
+import valueobjects.Money;
+import valueobjects.Periodo;
 import java.util.List;
 
-
 public class CamasEnvioDecorator extends ServicioDecorador {
-    private double costoAdicional;
+    private Money costoAdicional;
 
     public CamasEnvioDecorator(ServicioAbstracto servicio) {
         super(servicio);
-        this.costoAdicional = 15.0;
+        this.costoAdicional = Money.usd(15.0);
     }
 
     @Override
@@ -18,14 +20,14 @@ public class CamasEnvioDecorator extends ServicioDecorador {
     }
 
     @Override
-    public double calcularPrecio(String periodo, List<String> opciones, String pricingStrategy) {
-        double precioBase = servicioDecorado.calcularPrecio(periodo, opciones, pricingStrategy);
-        System.out.println("  [Decorador] Añadiendo Camas de Envío: +$" + costoAdicional);
-        return precioBase + costoAdicional;
+    public Money calcularPrecio(Periodo periodo, List<String> opciones, IPricingStrategy pricing) {
+        Money precioBase = servicioDecorado.calcularPrecio(periodo, opciones, pricing);
+        System.out.println("  [Decorador] Añadiendo Camas de Envío: +" + costoAdicional.toString());
+        return precioBase.sumar(costoAdicional);
     }
 
     @Override
     public String toString() {
-        return servicioDecorado.toString() + " [+ Camas de Envío $" + costoAdicional + "]";
+        return servicioDecorado.toString() + " [+ Camas de Envío " + costoAdicional.toString() + "]";
     }
 }

@@ -1,51 +1,45 @@
 package servicios;
 
+import interfaces.ICompatibilidadStrategy;
+import interfaces.IPricingStrategy;
+import strategies.CompatibilidadStrategyBasica;
+import strategies.PricingStrategyStandard;
+import valueobjects.Money;
+import valueobjects.Periodo;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class GuarderiaPequena extends ServicioAbstracto {
 
     public GuarderiaPequena() {
-        super("GP001", "Guardería Pequeña", "Cuidado diario para mascotas en centro pequeño", 25.0, "Perros, Gatos");
+        super("GP001", "Guardería Pequeña", "Cuidado diario para mascotas en centro pequeño", Money.usd(25.0), "Perros, Gatos");
     }
 
     @Override
-    public boolean esCompatible(String mascota, String regla) {
-        return tiposMascotaAdmitidos.toLowerCase().contains(mascota.toLowerCase());
+    public boolean esCompatible(Object mascota, ICompatibilidadStrategy regla) {
+        if (regla == null) {
+            // Estrategia por defecto si no se proporciona
+            regla = new CompatibilidadStrategyBasica();
+        }
+        return regla.esCompatible(this, mascota);
     }
 
     @Override
-    public boolean verificarDisponibilidad(String periodo) {
+    public boolean verificarDisponibilidad(Periodo periodo) {
         // Lógica simplificada - siempre hay disponibilidad en centros pequeños
-        return true;
+        if (periodo == null) {
+            return false;
+        }
+        // Verificar que el período no sea en el pasado
+        return !periodo.getInicio().isBefore(LocalDateTime.now());
     }
 
     @Override
-    public String obtenerNombre() {
-        return "Guardería Pequeña";
-    }
-
-    @Override
-    public double calcularPrecio(String periodo, List<String> opciones, String pricingStrategy) {
-        double precio = precioBase;
-        
-        // Ajuste por período
-        if (periodo.equalsIgnoreCase("semanal")) {
-            precio *= 5 * 0.9; // 5 días con 10% descuento
-        } else if (periodo.equalsIgnoreCase("mensual")) {
-            precio *= 20 * 0.8; // 20 días con 20% descuento
+    public Money calcularPrecio(Periodo periodo, List<String> opciones, IPricingStrategy pricing) {
+        if (pricing == null) {
+            // Usar estrategia estándar por defecto
+            pricing = new PricingStrategyStandard();
         }
-        
-        // Opciones adicionales
-        if (opciones != null) {
-            for (String opcion : opciones) {
-                if (opcion.equalsIgnoreCase("juegos")) {
-                    precio += 5.0;
-                } else if (opcion.equalsIgnoreCase("entrenamiento")) {
-                    precio += 10.0;
-                }
-            }
-        }
-        
-        return precio;
+        return super.calcularPrecio(periodo, opciones, pricing);
     }
 }

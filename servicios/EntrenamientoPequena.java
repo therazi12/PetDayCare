@@ -1,47 +1,41 @@
 package servicios;
 
+import interfaces.ICompatibilidadStrategy;
+import interfaces.IPricingStrategy;
+import strategies.CompatibilidadStrategyBasica;
+import strategies.PricingStrategyStandard;
+import valueobjects.Money;
+import valueobjects.Periodo;
+import java.time.LocalDateTime;
 import java.util.List;
-
 
 public class EntrenamientoPequena extends ServicioAbstracto {
 
     public EntrenamientoPequena() {
-        super("EP001", "Entrenamiento Pequeña", "Sesiones de entrenamiento básico en centro pequeño", 30.0, "Perros, Gatos");
+        super("EP001", "Entrenamiento Pequeña", "Sesiones de entrenamiento básico en centro pequeño", Money.usd(30.0), "Perros, Gatos");
     }
 
     @Override
-    public boolean esCompatible(String mascota, String regla) {
-        return tiposMascotaAdmitidos.toLowerCase().contains(mascota.toLowerCase());
-    }
-
-    @Override
-    public boolean verificarDisponibilidad(String periodo) {
-        return true;
-    }
-
-    @Override
-    public String obtenerNombre() {
-        return "Entrenamiento Pequeña";
-    }
-
-    @Override
-    public double calcularPrecio(String periodo, List<String> opciones, String pricingStrategy) {
-        double precio = precioBase;
-        
-        if (periodo.equalsIgnoreCase("semanal")) {
-            precio *= 3 * 0.9;
-        } else if (periodo.equalsIgnoreCase("mensual")) {
-            precio *= 12 * 0.85;
+    public boolean esCompatible(Object mascota, ICompatibilidadStrategy regla) {
+        if (regla == null) {
+            regla = new CompatibilidadStrategyBasica();
         }
-        
-        if (opciones != null) {
-            for (String opcion : opciones) {
-                if (opcion.equalsIgnoreCase("avanzado")) {
-                    precio += 15.0;
-                }
-            }
+        return regla.esCompatible(this, mascota);
+    }
+
+    @Override
+    public boolean verificarDisponibilidad(Periodo periodo) {
+        if (periodo == null) {
+            return false;
         }
-        
-        return precio;
+        return !periodo.getInicio().isBefore(LocalDateTime.now());
+    }
+
+    @Override
+    public Money calcularPrecio(Periodo periodo, List<String> opciones, IPricingStrategy pricing) {
+        if (pricing == null) {
+            pricing = new PricingStrategyStandard();
+        }
+        return super.calcularPrecio(periodo, opciones, pricing);
     }
 }

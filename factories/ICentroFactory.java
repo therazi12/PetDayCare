@@ -1,12 +1,15 @@
 package factories;
 
-import servicios.ServicioAbstracto;
+import interfaces.IServicioBase;
 
-
+/**
+ * Interfaz Abstract Factory para crear familias de servicios relacionados
+ * según el tipo de centro (pequeño o grande).
+ */
 public interface ICentroFactory {
-    ServicioAbstracto crearGuarderia();
-    ServicioAbstracto crearHospedaje();
-    ServicioAbstracto crearPaseo();
-    ServicioAbstracto crearEntrenamiento();
-    ServicioAbstracto crearBienestar();
+    IServicioBase crearGuarderia();
+    IServicioBase crearHospedaje();
+    IServicioBase crearPaseo();
+    IServicioBase crearEntrenamiento();
+    IServicioBase crearBienestar();
 }

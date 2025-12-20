@@ -1,36 +1,37 @@
 package factories;
 
+import interfaces.IServicioBase;
 import servicios.*;
 
 
 public class CentroPequenaFactory implements ICentroFactory {
 
     @Override
-    public ServicioAbstracto crearGuarderia() {
+    public IServicioBase crearGuarderia() {
         System.out.println("Creando Guardería para Centro Pequeño");
         return new GuarderiaPequena();
     }
 
     @Override
-    public ServicioAbstracto crearHospedaje() {
+    public IServicioBase crearHospedaje() {
         System.out.println("Creando Hospedaje para Centro Pequeño");
         return new HospedajePequena();
     }
 
     @Override
-    public ServicioAbstracto crearPaseo() {
+    public IServicioBase crearPaseo() {
         System.out.println("Creando Paseo para Centro Pequeño");
         return new PaseoPequena();
     }
 
     @Override
-    public ServicioAbstracto crearEntrenamiento() {
+    public IServicioBase crearEntrenamiento() {
         System.out.println("Creando Entrenamiento para Centro Pequeño");
         return new EntrenamientoPequena();
     }
 
     @Override
-    public ServicioAbstracto crearBienestar() {
+    public IServicioBase crearBienestar() {
         System.out.println("Creando Bienestar para Centro Pequeño");
         return new BienestarPequena();
     }

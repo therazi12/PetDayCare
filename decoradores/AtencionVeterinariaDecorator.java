@@ -1,15 +1,17 @@
 package decoradores;
 
+import interfaces.IPricingStrategy;
 import servicios.ServicioAbstracto;
+import valueobjects.Money;
+import valueobjects.Periodo;
 import java.util.List;
 
-
 public class AtencionVeterinariaDecorator extends ServicioDecorador {
-    private double costoAdicional;
+    private Money costoAdicional;
 
     public AtencionVeterinariaDecorator(ServicioAbstracto servicio) {
         super(servicio);
-        this.costoAdicional = 35.0;
+        this.costoAdicional = Money.usd(35.0);
     }
 
     @Override
@@ -18,14 +20,14 @@ public class AtencionVeterinariaDecorator extends ServicioDecorador {
     }
 
     @Override
-    public double calcularPrecio(String periodo, List<String> opciones, String pricingStrategy) {
-        double precioBase = servicioDecorado.calcularPrecio(periodo, opciones, pricingStrategy);
-        System.out.println("  [Decorador] Añadiendo Atención Veterinaria: +$" + costoAdicional);
-        return precioBase + costoAdicional;
+    public Money calcularPrecio(Periodo periodo, List<String> opciones, IPricingStrategy pricing) {
+        Money precioBase = servicioDecorado.calcularPrecio(periodo, opciones, pricing);
+        System.out.println("  [Decorador] Añadiendo Atención Veterinaria: +" + costoAdicional.toString());
+        return precioBase.sumar(costoAdicional);
     }
 
     @Override
     public String toString() {
-        return servicioDecorado.toString() + " [+ Atención Veterinaria $" + costoAdicional + "]";
+        return servicioDecorado.toString() + " [+ Atención Veterinaria " + costoAdicional.toString() + "]";
     }
 }
