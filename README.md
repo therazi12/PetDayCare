@@ -91,14 +91,14 @@ Ver `test/README.md` para más detalles sobre las pruebas.
 - **Build Tool**: Maven (opcional)
 
 
-## 👥Autor
+## Autor
 
 Proyecto desarrollado por estudiantes de la materia de Diseño de software en la universidad ESPOL.
 
-## 📄 Licencia
+##  Licencia
 
 Este proyecto es de uso educativo y demostrativo.
 
 ---
 
-⭐ Si este proyecto te resultó útil, considera darle una estrella en GitHub.
+ Si este proyecto te resultó útil, considera darle una estrella en GitHub.
