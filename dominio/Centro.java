@@ -15,9 +15,8 @@ public class Centro {
     private String direccion;
     private int capacidad;
     private ICentroFactory servicioFactory;
-    // Estos se usarán cuando se creen en la Parte 3
-    private Object politicaCancelacion; // Será PoliticaCancelacion en la Parte 3
-    private Map<String, Object> disponibilidades; // Será Map<String, Disponibilidad> en la Parte 3
+    private PoliticaCancelacion politicaCancelacion;
+    private Map<String, Disponibilidad> disponibilidades;
 
     public Centro(String id, String nombre, String direccion, int capacidad) {
         if (id == null || id.trim().isEmpty()) {
@@ -97,10 +96,8 @@ public class Centro {
 
     /**
      * Define la política de cancelación del centro.
-     * Se implementará completamente en la Parte 3 cuando se cree PoliticaCancelacion.
      */
-    public void definirPoliticaCancelacion(Object politica) {
-        // En la Parte 3 esto será: public void definirPoliticaCancelacion(PoliticaCancelacion politica)
+    public void definirPoliticaCancelacion(PoliticaCancelacion politica) {
         if (politica == null) {
             throw new IllegalArgumentException("La política de cancelación no puede ser null");
         }
@@ -110,17 +107,28 @@ public class Centro {
 
     /**
      * Programa una disponibilidad para el centro.
-     * Se implementará completamente en la Parte 3 cuando se cree Disponibilidad.
      */
-    public void programarDisponibilidad(Object disponibilidad) {
-        // En la Parte 3 esto será: public void programarDisponibilidad(Disponibilidad disponibilidad)
+    public void programarDisponibilidad(Disponibilidad disponibilidad) {
         if (disponibilidad == null) {
             throw new IllegalArgumentException("La disponibilidad no puede ser null");
         }
-        // Por ahora usamos un identificador temporal
-        String key = "disponibilidad_" + disponibilidades.size();
+        String key = disponibilidad.getId();
         disponibilidades.put(key, disponibilidad);
         System.out.println("  [Centro] Disponibilidad programada para el centro " + nombre);
+    }
+
+    /**
+     * Obtiene la política de cancelación del centro.
+     */
+    public PoliticaCancelacion getPoliticaCancelacion() {
+        return politicaCancelacion;
+    }
+
+    /**
+     * Obtiene todas las disponibilidades del centro.
+     */
+    public Map<String, Disponibilidad> getDisponibilidades() {
+        return new HashMap<>(disponibilidades); // Retornar copia para inmutabilidad
     }
 
     /**
