@@ -107,6 +107,20 @@ public class Usuario {
         // En producción, esto guardaría la relación usuario-mascota en un repositorio
     }
 
+    /**
+     * Recibe una notificación del sistema.
+     * Incorpora comportamiento lógico en el usuario en lugar de ser solo datos.
+     */
+    public void recibirNotificacion(String mensaje) {
+        if (mensaje == null || mensaje.trim().isEmpty()) {
+            return;
+        }
+        
+        System.out.println("  [Usuario] " + nombre + " recibió notificación por " + 
+        medioPreferidoNotificacion + ":");
+        System.out.println("    >> " + mensaje);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -126,4 +140,3 @@ public class Usuario {
                 id, nombre, email, telefono, medioPreferidoNotificacion);
     }
 }
-

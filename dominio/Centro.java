@@ -18,6 +18,13 @@ public class Centro {
     private PoliticaCancelacion politicaCancelacion;
     private Map<String, Disponibilidad> disponibilidades;
 
+    // Constantes de tipos de servicio
+    public static final String TIPO_GUARDERIA = "guarderia";
+    public static final String TIPO_HOSPEDAJE = "hospedaje";
+    public static final String TIPO_PASEO = "paseo";
+    public static final String TIPO_ENTRENAMIENTO = "entrenamiento";
+    public static final String TIPO_BIENESTAR = "bienestar";
+
     public Centro(String id, String nombre, String direccion, int capacidad) {
         if (id == null || id.trim().isEmpty()) {
             throw new IllegalArgumentException("El ID no puede ser null o vacío");
@@ -142,25 +149,26 @@ public class Centro {
             throw new IllegalStateException("El centro no tiene una factory asignada");
         }
         if (tipo == null || tipo.trim().isEmpty()) {
-            throw new IllegalArgumentException("El tipo de servicio no puede ser null o vacío");
+           throw new IllegalArgumentException("El tipo de servicio no puede ser null o vacío");
         }
         
         tipo = tipo.toLowerCase().trim();
         
         switch (tipo) {
-            case "guarderia":
+            case TIPO_GUARDERIA:
                 return servicioFactory.crearGuarderia();
-            case "hospedaje":
+            case TIPO_HOSPEDAJE:
                 return servicioFactory.crearHospedaje();
-            case "paseo":
+            case TIPO_PASEO:
                 return servicioFactory.crearPaseo();
-            case "entrenamiento":
+            case TIPO_ENTRENAMIENTO:
                 return servicioFactory.crearEntrenamiento();
-            case "bienestar":
+            case TIPO_BIENESTAR:
                 return servicioFactory.crearBienestar();
             default:
                 throw new IllegalArgumentException("Tipo de servicio no válido: " + tipo + 
-                    ". Tipos válidos: guarderia, hospedaje, paseo, entrenamiento, bienestar");
+                    ". Tipos válidos: " + TIPO_GUARDERIA + ", " + TIPO_HOSPEDAJE + ", " + 
+                    TIPO_PASEO + ", " + TIPO_ENTRENAMIENTO + ", " + TIPO_BIENESTAR);
         }
     }
 

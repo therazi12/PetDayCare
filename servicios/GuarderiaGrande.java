@@ -15,13 +15,7 @@ public class GuarderiaGrande extends ServicioAbstracto {
         super("GG001", "Guardería Grande", "Cuidado diario premium para mascotas en centro grande", Money.usd(40.0), "Perros, Gatos, Aves");
     }
 
-    @Override
-    public boolean esCompatible(Object mascota, ICompatibilidadStrategy regla) {
-        if (regla == null) {
-            regla = new CompatibilidadStrategyBasica();
-        }
-        return regla.esCompatible(this, mascota);
-    }
+
 
     @Override
     public boolean verificarDisponibilidad(Periodo periodo) {

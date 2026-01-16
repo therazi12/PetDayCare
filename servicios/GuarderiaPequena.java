@@ -1,4 +1,5 @@
 package servicios;
+package servicios;
 
 import interfaces.ICompatibilidadStrategy;
 import interfaces.IPricingStrategy;
@@ -15,14 +16,7 @@ public class GuarderiaPequena extends ServicioAbstracto {
         super("GP001", "Guardería Pequeña", "Cuidado diario para mascotas en centro pequeño", Money.usd(25.0), "Perros, Gatos");
     }
 
-    @Override
-    public boolean esCompatible(Object mascota, ICompatibilidadStrategy regla) {
-        if (regla == null) {
-            // Estrategia por defecto si no se proporciona
-            regla = new CompatibilidadStrategyBasica();
-        }
-        return regla.esCompatible(this, mascota);
-    }
+
 
     @Override
     public boolean verificarDisponibilidad(Periodo periodo) {

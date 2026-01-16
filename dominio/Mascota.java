@@ -1,12 +1,19 @@
 package dominio;
 
-import java.util.Objects;
-import valueobjects.PerfilMascotaData;
+import interfaces.ICentroFactory; 
+import interfaces.IServicioBase;
+import interfaces.ICompatibilidadStrategy;
+import interfaces.IServicioBase;
+import interfaces.ICompatibilidadStrategy;
 
 /**
  * Clase que representa una mascota en el sistema PetDayCare.
  */
 public class Mascota {
+    private String id;
+    private String especie;
+    private String nombre;
+    private String raza;
     private String id;
     private String especie;
     private String nombre;
@@ -73,9 +80,7 @@ public class Mascota {
         return necesidadesEspeciales;
     }
 
-    /**
-     * Actualiza el perfil de la mascota usando un objeto PerfilMascotaData.
-     */
+  
     public void actualizarPerfil(PerfilMascotaData datos) {
         if (datos == null) {
             throw new IllegalArgumentException("Los datos del perfil no pueden ser null");
@@ -87,18 +92,21 @@ public class Mascota {
         this.necesidadesEspeciales = datos.necesidadesEspeciales();
     }
 
-    /**
-     * Crea un objeto PerfilMascotaData a partir de los datos actuales de la mascota.
-     */
+ 
     public PerfilMascotaData obtenerPerfil() {
         return new PerfilMascotaData(especie, raza, tamaño, edad, necesidadesEspeciales);
     }
 
-    /**
-     * Verifica si la mascota tiene necesidades especiales.
-     */
     public boolean tieneNecesidadesEspeciales() {
         return necesidadesEspeciales != null && !necesidadesEspeciales.trim().isEmpty();
+    }
+
+ 
+    public boolean esCompatibleCon(IServicioBase servicio, ICompatibilidadStrategy estrategia) {
+        if (servicio == null || estrategia == null) {
+            return false;
+        }
+        return estrategia.esCompatible(servicio, this);
     }
 
     @Override

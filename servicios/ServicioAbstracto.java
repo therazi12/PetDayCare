@@ -1,5 +1,7 @@
 package servicios;
 
+import dominio.Mascota;
+
 import interfaces.IServicioBase;
 import interfaces.ICompatibilidadStrategy;
 import interfaces.IPricingStrategy;
@@ -7,10 +9,7 @@ import valueobjects.Money;
 import valueobjects.Periodo;
 import java.util.List;
 
-/**
- * Clase abstracta base para todos los servicios del sistema.
- * Implementa IServicioBase y proporciona funcionalidad común.
- */
+
 public abstract class ServicioAbstracto implements IServicioBase {
     protected String id;
     protected String nombre;
@@ -40,34 +39,24 @@ public abstract class ServicioAbstracto implements IServicioBase {
         this(id, nombre, descripcion, Money.usd(precioBase), tiposMascotaAdmitidos);
     }
 
-    /**
-     * Verifica si el servicio es compatible con una mascota usando una estrategia de compatibilidad.
-     * @param mascota La mascota a verificar (puede ser String temporalmente o objeto Mascota)
-     * @param regla La estrategia de compatibilidad a utilizar
-     * @return true si es compatible, false en caso contrario
-     */
-    public abstract boolean esCompatible(Object mascota, ICompatibilidadStrategy regla);
+ 
+    public boolean esCompatible(Mascota mascota, ICompatibilidadStrategy regla) {
+        if (regla == null) {
+            regla = new strategies.CompatibilidadStrategyBasica();
+        }
+        return regla.esCompatible(this, mascota);
+    }
 
-    /**
-     * Verifica la disponibilidad del servicio para un período dado.
-     * @param periodo El período para el cual se verifica la disponibilidad
-     * @return true si está disponible, false en caso contrario
-     */
+
     public abstract boolean verificarDisponibilidad(Periodo periodo);
 
-    /**
-     * Obtiene el nombre del servicio.
-     * Implementación por defecto que retorna el nombre almacenado.
-     */
+
     @Override
     public String obtenerNombre() {
         return nombre;
     }
 
-    /**
-     * Calcula el precio del servicio usando una estrategia de pricing.
-     * Las clases hijas pueden sobrescribir este método para lógica específica.
-     */
+    
     @Override
     public Money calcularPrecio(Periodo periodo, List<String> opciones, IPricingStrategy pricing) {
         if (periodo == null) {
@@ -105,3 +94,4 @@ public abstract class ServicioAbstracto implements IServicioBase {
         return String.format("%s (ID: %s) - %s - %s", nombre, id, precioBase.toString(), descripcion);
     }
 }
+
