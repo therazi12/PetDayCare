@@ -34,12 +34,11 @@ public abstract class ServicioAbstracto implements IServicioBase {
         this.tiposMascotaAdmitidos = tiposMascotaAdmitidos != null ? tiposMascotaAdmitidos : "";
     }
 
-    // Constructor de conveniencia para mantener compatibilidad con código existente
     public ServicioAbstracto(String id, String nombre, String descripcion, double precioBase, String tiposMascotaAdmitidos) {
         this(id, nombre, descripcion, Money.usd(precioBase), tiposMascotaAdmitidos);
     }
 
- 
+    
     public boolean esCompatible(Mascota mascota, ICompatibilidadStrategy regla) {
         if (regla == null) {
             regla = new strategies.CompatibilidadStrategyBasica();
@@ -47,10 +46,10 @@ public abstract class ServicioAbstracto implements IServicioBase {
         return regla.esCompatible(this, mascota);
     }
 
-
+    
     public abstract boolean verificarDisponibilidad(Periodo periodo);
 
-
+    
     @Override
     public String obtenerNombre() {
         return nombre;
@@ -94,4 +93,3 @@ public abstract class ServicioAbstracto implements IServicioBase {
         return String.format("%s (ID: %s) - %s - %s", nombre, id, precioBase.toString(), descripcion);
     }
 }
-
