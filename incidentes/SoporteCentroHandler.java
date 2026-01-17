@@ -4,14 +4,9 @@ public class SoporteCentroHandler extends BaseHandlerIncidente {
 
     @Override
     public String manejar(Incidente incidente) {
-        if (incidente.getGravedad().equalsIgnoreCase("baja") || 
-            incidente.getGravedad().equalsIgnoreCase("media")) {
+        if (incidente.esGravedadLeve()) {
             
-            String resultado = "SOPORTE CENTRO: Incidente #" + incidente.getId() + 
-                              " manejado por el centro local.\n" +
-                              "  Gravedad: " + incidente.getGravedad() + 
-                              "\n  Motivo: " + incidente.getMotivo() +
-                              "\n  Acción: Resuelto localmente";
+            String resultado = formatearRespuesta("Soporte Centro", incidente, "Resuelto localmente");
             
             System.out.println("  [Handler] " + resultado);
             return resultado;
