@@ -9,19 +9,13 @@ import valueobjects.Periodo;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class EntrenamientoPequena extends ServicioAbstracto {
+public class GuarderiaPequena extends ServicioAbstracto {
 
-    public EntrenamientoPequena() {
-        super("EP001", "Entrenamiento Pequeña", "Sesiones de entrenamiento básico en centro pequeño", Money.usd(30.0), "Perros, Gatos");
+    public GuarderiaPequena() {
+        super("GP001", "Guardería Pequeña", "Cuidado diario para mascotas en centro pequeño", Money.usd(25.0), "Perros, Gatos");
     }
 
-    @Override
-    public boolean esCompatible(Object mascota, ICompatibilidadStrategy regla) {
-        if (regla == null) {
-            regla = new CompatibilidadStrategyBasica();
-        }
-        return regla.esCompatible(this, mascota);
-    }
+
 
     @Override
     public boolean verificarDisponibilidad(Periodo periodo) {

@@ -87,30 +87,20 @@ public class Usuario {
         this.medioPreferidoNotificacion = medioPreferidoNotificacion;
     }
 
-    /**
-     * Actualiza la información de contacto del usuario.
-     */
+
     public void actualizarContacto(String email, String telefono) {
         setEmail(email);
         setTelefono(telefono);
     }
 
-    /**
-     * Registra una mascota para el usuario.
-     * Según el diagrama UML, Usuario debe tener este método.
-     */
+
     public void registrarMascota(dominio.Mascota mascota) {
         if (mascota == null) {
             throw new IllegalArgumentException("La mascota no puede ser null");
         }
         System.out.println("  [Usuario] " + nombre + " registró la mascota: " + mascota.getNombre());
-        // En producción, esto guardaría la relación usuario-mascota en un repositorio
     }
 
-    /**
-     * Recibe una notificación del sistema.
-     * Incorpora comportamiento lógico en el usuario en lugar de ser solo datos.
-     */
     public void recibirNotificacion(String mensaje) {
         if (mensaje == null || mensaje.trim().isEmpty()) {
             return;

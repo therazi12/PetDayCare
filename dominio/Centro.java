@@ -138,12 +138,7 @@ public class Centro {
         return new HashMap<>(disponibilidades); // Retornar copia para inmutabilidad
     }
 
-    /**
-     * Obtiene un servicio del tipo especificado usando la factory del centro.
-     * 
-     * @param tipo El tipo de servicio a obtener: "guarderia", "hospedaje", "paseo", "entrenamiento", "bienestar"
-     * @return El servicio solicitado o null si el tipo no es válido o no hay factory asignada
-     */
+
     public IServicioBase obtenerServicio(String tipo) {
         if (servicioFactory == null) {
             throw new IllegalStateException("El centro no tiene una factory asignada");
