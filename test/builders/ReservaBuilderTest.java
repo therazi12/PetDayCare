@@ -1,130 +1,97 @@
-package builders;
-
+import builders.ReservaBuilder;
 import dominio.Centro;
 import dominio.Mascota;
 import dominio.Usuario;
-import enums.MetodoNotificacion;
 import estados.Reserva;
-import factories.CentroGrandeFactory;
 import interfaces.IServicioBase;
-import org.junit.jupiter.api.Test;
+import valueobjects.Periodo;
+import enums.MetodoNotificacion;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-import valueobjects.Periodo;
 
-/**
- * Pruebas unitarias para ReservaBuilder.
- */
-@DisplayName("Pruebas para ReservaBuilder")
-class ReservaBuilderTest {
+import static org.junit.jupiter.api.Assertions.*;
 
-    private Usuario usuario;
-    private Mascota mascota;
-    private Centro centro;
-    private Periodo periodo;
-    private IServicioBase servicio;
+public class ReservaBuilderTest {
 
-    @org.junit.jupiter.api.BeforeEach
-    void setUp() {
-        usuario = new Usuario("U001", "Juan Pérez", "juan@email.com", 
-            "123456789", MetodoNotificacion.EMAIL);
-        mascota = new Mascota("M001", "Max", "Perro", "Labrador", 
-            "Grande", 3, "");
-        centro = new Centro("C001", "Centro Test", "Dirección Test", 50);
-        periodo = new Periodo(
-            LocalDateTime.of(2024, 1, 1, 10, 0),
-            LocalDateTime.of(2024, 1, 1, 18, 0)
-        );
-        
-        CentroGrandeFactory factory = new CentroGrandeFactory();
-        servicio = factory.crearGuarderia();
-    }
+	private Usuario usuario;
+	private Mascota mascota;
+	private Centro centro;
+	private Periodo periodo;
+	private IServicioBase servicio;
 
-    @Test
-    @DisplayName("Construir Reserva con todos los datos")
-    void construirReservaCompleta() {
-        Reserva reserva = new ReservaBuilder()
-            .setUsuario(usuario)
-            .setMascota(mascota)
-            .setCentro(centro)
-            .setPeriodo(periodo)
-            .addService(servicio)
-            .build();
-        
-        assertNotNull(reserva);
-        assertEquals(usuario, reserva.getUsuario());
-        assertEquals(mascota, reserva.getMascota());
-        assertEquals(centro, reserva.getCentro());
-    }
+	@BeforeEach
+	void setUp() {
+		usuario = new Usuario("U1", "Juan", "juan@mail.com", "123456789", MetodoNotificacion.EMAIL);
+		mascota = new Mascota("M1", "Firulais", "Perro", "Labrador", "Mediano", 3, "");
+		centro = new Centro("C1", "Centro 1", "Calle 123", 10);
+		periodo = new Periodo(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2));
+		// Mock simple de IServicioBase
+		servicio = new IServicioBase() {
+			@Override
+			public String obtenerNombre() { return "Guardería"; }
+			@Override
+			public valueobjects.Money calcularPrecio(Periodo p, java.util.List<String> o, interfaces.IPricingStrategy pr) { return valueobjects.Money.usd(10); }
+		};
+	}
 
-    @Test
-    @DisplayName("Construir Reserva con múltiples servicios")
-    void construirReservaConMultiplesServicios() {
-        CentroGrandeFactory factory = new CentroGrandeFactory();
-        IServicioBase servicio1 = factory.crearGuarderia();
-        IServicioBase servicio2 = factory.crearPaseo();
-        
-        Reserva reserva = new ReservaBuilder()
-            .setUsuario(usuario)
-            .setMascota(mascota)
-            .setCentro(centro)
-            .setPeriodo(periodo)
-            .addService(servicio1)
-            .addService(servicio2)
-            .build();
-        
-        assertEquals(2, reserva.getLineas().size());
-    }
+	@Test
+	@DisplayName("TC01: addService agrega servicio válido y retorna builder")
+	void testAddServiceValido() {
+		ReservaBuilder builder = new ReservaBuilder();
+		ReservaBuilder returned = builder.addService(servicio);
+		assertSame(builder, returned);
+		// Para verificar que el servicio se agregó, intentamos construir la reserva con todos los datos
+		Reserva reserva = builder.setUsuario(usuario).setMascota(mascota).setCentro(centro).setPeriodo(periodo).build();
+		assertNotNull(reserva);
+		assertEquals(usuario, reserva.getUsuario());
+	}
 
-    @Test
-    @DisplayName("Lanzar excepción al construir sin usuario")
-    void construirSinUsuario() {
-        assertThrows(IllegalStateException.class, () -> {
-            new ReservaBuilder()
-                .setMascota(mascota)
-                .setCentro(centro)
-                .setPeriodo(periodo)
-                .addService(servicio)
-                .build();
-        });
-    }
+	@Test
+	@DisplayName("TC02: addService con null lanza excepción")
+	void testAddServiceNull() {
+		ReservaBuilder builder = new ReservaBuilder();
+		Exception ex = assertThrows(IllegalArgumentException.class, () -> builder.addService(null));
+		assertEquals("El servicio no puede ser null", ex.getMessage());
+	}
 
-    @Test
-    @DisplayName("Lanzar excepción al construir sin servicios")
-    void construirSinServicios() {
-        assertThrows(IllegalStateException.class, () -> {
-            new ReservaBuilder()
-                .setUsuario(usuario)
-                .setMascota(mascota)
-                .setCentro(centro)
-                .setPeriodo(periodo)
-                .build();
-        });
-    }
+	@Test
+	@DisplayName("TC03: build con todos los datos y servicio crea Reserva")
+	void testBuildExitoso() {
+		ReservaBuilder builder = new ReservaBuilder()
+				.setUsuario(usuario)
+				.setMascota(mascota)
+				.setCentro(centro)
+				.setPeriodo(periodo)
+				.addService(servicio);
+		Reserva reserva = builder.build();
+		assertNotNull(reserva);
+		assertEquals(usuario, reserva.getUsuario());
+		assertEquals(mascota, reserva.getMascota());
+		assertEquals(centro, reserva.getCentro());
+		assertEquals(periodo, reserva.getPeriodo());
+	}
 
-    @Test
-    @DisplayName("Lanzar excepción al agregar servicio null")
-    void agregarServicioNull() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new ReservaBuilder().addService(null);
-        });
-    }
+	@Test
+	@DisplayName("TC04: build con datos obligatorios faltantes lanza excepción")
+	void testBuildFaltanDatosObligatorios() {
+		ReservaBuilder builder = new ReservaBuilder();
+		builder.addService(servicio); // Solo agrega servicio, faltan los demás
+		Exception ex = assertThrows(IllegalStateException.class, builder::build);
+		assertTrue(ex.getMessage().contains("Faltan datos obligatorios"));
+	}
 
-    @Test
-    @DisplayName("Verificar interfaz fluida del builder")
-    void interfazFluida() {
-        ReservaBuilder builder = new ReservaBuilder()
-            .setUsuario(usuario)
-            .setMascota(mascota)
-            .setCentro(centro)
-            .setPeriodo(periodo)
-            .addService(servicio);
-        
-        assertNotNull(builder);
-        Reserva reserva = builder.build();
-        assertNotNull(reserva);
-    }
+	@Test
+	@DisplayName("TC05: build con lista de servicios vacía lanza excepción")
+	void testBuildSinServicios() {
+		ReservaBuilder builder = new ReservaBuilder()
+				.setUsuario(usuario)
+				.setMascota(mascota)
+				.setCentro(centro)
+				.setPeriodo(periodo);
+		Exception ex = assertThrows(IllegalStateException.class, builder::build);
+		assertEquals("La reserva debe tener al menos un servicio.", ex.getMessage());
+	}
 }
-

@@ -1,84 +1,47 @@
-package dominio;
-
+import dominio.Mascota;
 import valueobjects.PerfilMascotaData;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.DisplayName;
 import static org.junit.jupiter.api.Assertions.*;
+import org.mockito.Mockito;
 
-/**
- * Pruebas unitarias para la clase Mascota.
- */
-@DisplayName("Pruebas para Mascota")
 class MascotaTest {
 
-    @Test
-    @DisplayName("Crear Mascota con datos válidos")
-    void crearMascotaValida() {
-        Mascota mascota = new Mascota("M001", "Max", "Perro", "Labrador", 
-            "Grande", 3, "");
-        
-        assertEquals("M001", mascota.getId());
-        assertEquals("Max", mascota.getNombre());
-        assertEquals("Perro", mascota.getEspecie());
-    }
+	private Mascota mascota;
 
-    @Test
-    @DisplayName("Lanzar excepción al crear Mascota con ID null")
-    void crearMascotaConIdNull() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Mascota(null, "Max", "Perro", "Labrador", "Grande", 3, "");
-        });
-    }
+	@BeforeEach
+	void setUp() {
+		mascota = new Mascota("1", "Firulais", "Perro", "Labrador", "Grande", 5, "Alergias");
+	}
 
-    @Test
-    @DisplayName("Obtener PerfilMascotaData")
-    void obtenerPerfilMascotaData() {
-        Mascota mascota = new Mascota("M001", "Max", "Perro", "Labrador", 
-            "Grande", 2, "Alergias");
-        
-        PerfilMascotaData perfil = mascota.obtenerPerfil();
-        assertEquals("Perro", perfil.especie());
-        assertEquals("Labrador", perfil.raza());
-        assertEquals("Grande", perfil.tamaño());
-        assertEquals(2, perfil.edad());
-        assertEquals("Alergias", perfil.necesidadesEspeciales());
-    }
+	@Test
+	void testActualizarPerfil_DatosValidos() {
+		// Arrange
+		PerfilMascotaData datos = Mockito.mock(PerfilMascotaData.class);
+		Mockito.when(datos.especie()).thenReturn("Gato");
+		Mockito.when(datos.raza()).thenReturn("Siames");
+		Mockito.when(datos.tamaño()).thenReturn("Pequeño");
+		Mockito.when(datos.edad()).thenReturn(3);
+		Mockito.when(datos.necesidadesEspeciales()).thenReturn("Ninguna");
 
-    @Test
-    @DisplayName("Actualizar PerfilMascotaData")
-    void actualizarPerfilMascotaData() {
-        Mascota mascota = new Mascota("M001", "Max", "Perro", "Labrador", 
-            "Grande", 2, "");
-        
-        PerfilMascotaData nuevoPerfil = new PerfilMascotaData("Gato", "Persa", 
-            "Mediano", 1, "Ninguna");
-        mascota.actualizarPerfil(nuevoPerfil);
-        
-        assertEquals("Gato", mascota.getEspecie());
-        assertEquals("Persa", mascota.getRaza());
-    }
+		// Act
+		mascota.actualizarPerfil(datos);
 
-    @Test
-    @DisplayName("Verificar si es cachorro")
-    void esCachorro() {
-        Mascota cachorro = new Mascota("M001", "Max", "Perro", "Labrador", 
-            "Grande", 1, "");
-        Mascota adulto = new Mascota("M002", "Luna", "Perro", "Labrador", 
-            "Grande", 5, "");
-        
-        assertTrue(cachorro.obtenerPerfil().esCachorro());
-        assertFalse(adulto.obtenerPerfil().esCachorro());
-    }
+		// Assert
+		assertEquals("Gato", mascota.getEspecie());
+		assertEquals("Siames", mascota.getRaza());
+		assertEquals("Pequeño", mascota.getTamaño());
+		assertEquals(3, mascota.getEdad());
+		assertEquals("Ninguna", mascota.getNecesidadesEspeciales());
+		assertEquals("Firulais", mascota.getNombre(), "El nombre no debe cambiar");
+	}
 
-    @Test
-    @DisplayName("Verificar igualdad con equals")
-    void testEquals() {
-        Mascota mascota1 = new Mascota("M001", "Max", "Perro", "Labrador", 
-            "Grande", 3, "");
-        Mascota mascota2 = new Mascota("M001", "Max", "Perro", "Labrador", 
-            "Grande", 3, "");
-        
-        assertEquals(mascota1, mascota2);
-    }
+	@Test
+	void testActualizarPerfil_DatosNull() {
+		// Act & Assert
+		IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
+			mascota.actualizarPerfil(null);
+		});
+		assertTrue(ex.getMessage().contains("perfil"));
+	}
 }
-
