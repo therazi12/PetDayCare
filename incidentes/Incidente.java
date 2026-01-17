@@ -8,6 +8,17 @@ public class Incidente {
     private String reservaId;
     private String estado; // Estado del incidente: "pendiente", "en_proceso", "resuelto", "cerrado"
 
+    // Constantes de Gravedad
+    public static final String GRAVEDAD_BAJA = "baja";
+    public static final String GRAVEDAD_MEDIA = "media";
+    public static final String GRAVEDAD_ALTA = "alta";
+    
+    // Constantes de Estado
+    public static final String ESTADO_PENDIENTE = "pendiente";
+    public static final String ESTADO_EN_PROCESO = "en_proceso";
+    public static final String ESTADO_RESUELTO = "resuelto";
+    public static final String ESTADO_CERRADO = "cerrado";
+
     public Incidente(String id, String motivo, String gravedad, String reservaId) {
         if (id == null || id.trim().isEmpty()) {
             throw new IllegalArgumentException("El ID no puede ser null o vacío");
@@ -26,7 +37,7 @@ public class Incidente {
         this.motivo = motivo;
         this.gravedad = gravedad;
         this.reservaId = reservaId;
-        this.estado = "pendiente"; // Estado inicial
+        this.estado = ESTADO_PENDIENTE; // Estado inicial
     }
 
     public void reportar() {
@@ -36,35 +47,36 @@ public class Incidente {
                           " - Estado: " + estado);
     }
 
-    /**
-     * Verifica si el incidente está resuelto.
-     */
+    
     public boolean esResuelto() {
-        return "resuelto".equalsIgnoreCase(estado) || "cerrado".equalsIgnoreCase(estado);
+        return ESTADO_RESUELTO.equalsIgnoreCase(estado) || ESTADO_CERRADO.equalsIgnoreCase(estado);
     }
 
-    /**
-     * Marca el incidente como resuelto.
-     */
+    
     public void marcarComoResuelto() {
-        this.estado = "resuelto";
+        this.estado = ESTADO_RESUELTO;
         System.out.println("  [Incidente] Incidente #" + id + " marcado como resuelto");
     }
 
-    /**
-     * Marca el incidente como en proceso.
-     */
+    
     public void marcarComoEnProceso() {
-        this.estado = "en_proceso";
+        this.estado = ESTADO_EN_PROCESO;
         System.out.println("  [Incidente] Incidente #" + id + " marcado como en proceso");
     }
 
-    /**
-     * Cierra el incidente.
-     */
+    
     public void cerrar() {
-        this.estado = "cerrado";
+        this.estado = ESTADO_CERRADO;
         System.out.println("  [Incidente] Incidente #" + id + " cerrado");
+    }
+    
+    
+    public boolean esGravedadLeve() {
+        return GRAVEDAD_BAJA.equalsIgnoreCase(gravedad) || GRAVEDAD_MEDIA.equalsIgnoreCase(gravedad);
+    }
+   
+    public boolean esGravedadAlta() {
+        return GRAVEDAD_ALTA.equalsIgnoreCase(gravedad);
     }
 
     // Getters
